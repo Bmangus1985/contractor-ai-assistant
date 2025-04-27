@@ -22,10 +22,11 @@ app.get('/', (req, res) => {
   res.send('Contractor AI Server is running.');
 });
 
-app.post('/webhook', (req, res) => {
+// 🔥 Updated: Handle ALL methods (GET, POST) at /webhook
+app.all('/webhook', (req, res) => {
   console.log('📞 Incoming call webhook from Telnyx');
 
-  const websocketUrl = 'wss://your-replit-websocket-url-or-other.dev/';
+  const websocketUrl = 'wss://your-websocket-server-url-here'; // Replace if needed
 
   const response = `
     <?xml version="1.0" encoding="UTF-8"?>
@@ -35,9 +36,10 @@ app.post('/webhook', (req, res) => {
     </Response>
   `;
   res.set('Content-Type', 'text/xml');
-  res.send(response.trim());
+  res.status(200).send(response.trim());
 });
 
+// Handle WebSocket audio stream
 wss.on('connection', (ws) => {
   console.log('🚀 New Telnyx call stream connected!');
 
@@ -91,11 +93,13 @@ wss.on('connection', (ws) => {
   });
 });
 
+// Start server
 const PORT = process.env.PORT || 8080;
 server.listen(PORT, () => {
   console.log(`🛡️ Server listening on port ${PORT}`);
 });
 
+// 🤖 GPT-4 Assistant Function
 async function getAssistantReply(customerText) {
   try {
     const response = await axios.post('https://api.openai.com/v1/chat/completions', {
